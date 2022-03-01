@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -28,7 +29,7 @@ public class SignUpController {
     private PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();;
 
     @PostMapping("/api/auth/signup")
-    public Map<String, String> signUp(@RequestBody User user) {
+    public User signUp(@RequestBody User user) {
         String email = user.getEmail();
         String password = user.getPassword();
         String name = user.getName();
@@ -47,36 +48,40 @@ public class SignUpController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        User retrievedUser = userService.getUserByEmail(email);
+        User retrievedUser = userService.getUserByEmail(email.toLowerCase());
         //check if user is registered
         if(retrievedUser !=null){
             throw new UserExistException();
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         LOGGER.info(" Password encoded: " + user);
+        user.setEmail(user.getEmail().toLowerCase());
         user = userService.register(user);
 
         LOGGER.info(" User signup successfully: " + user);
 
-        Map<String, String> m = new HashMap<>();
+       /* Map<String, String> m = new HashMap<>();
         m.put("id", String.valueOf(user.getId()));
         m.put("name", user.getName());
         m.put("lastname", user.getLastname());
         m.put("email", user.getEmail());
         return m;
+        */
+        return user;
     }
     @GetMapping("api/empl/payment")
-    public Map<String, String> getPayment(@AuthenticationPrincipal UserDetails details){
+    public User getPayment(@AuthenticationPrincipal UserDetails details){
        if(details ==null){
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
        }
        User user = userService.getUserByEmail(details.getUsername());
 
-        Map<String, String> m = new HashMap<>();
+        return user;
+        /*Map<String, String> m = new HashMap<>();
         m.put("id", String.valueOf(user.getId()));
         m.put("name", user.getName());
         m.put("lastname", user.getLastname());
         m.put("email", user.getEmail());
-        return m;
+        return m;*/
     }
 }

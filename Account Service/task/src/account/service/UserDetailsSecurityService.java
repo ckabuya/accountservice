@@ -19,9 +19,9 @@ public class UserDetailsSecurityService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        LOGGER.info("Loading user for authentication " + username); //temp
+        LOGGER.info("Loading user for authentication " + username.toLowerCase()); //temp
 
-        Optional<User> optUser = Optional.ofNullable(userService.getUserByEmail(username));
+        Optional<User> optUser = Optional.ofNullable(userService.getUserByEmail(username.toLowerCase()));
 
         if(optUser.isEmpty()){
             LOGGER.info("No user found from the database: " + optUser); //tem
@@ -29,7 +29,7 @@ public class UserDetailsSecurityService implements UserDetailsService {
         }
 
         User user = optUser.get();
-        UserDetails userDetail=org.springframework.security.core.userdetails.User.withUsername(user.getEmail()).password(user.getPassword()).authorities("USER").build();
+        UserDetails userDetail=org.springframework.security.core.userdetails.User.withUsername(user.getEmail().toLowerCase()).password(user.getPassword()).authorities("USER").build();
         LOGGER.info("User Details from the database: " + userDetail); //tem
         return userDetail;
     }

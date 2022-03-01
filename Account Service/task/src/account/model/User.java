@@ -1,6 +1,7 @@
 package account.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,10 +23,11 @@ public class User {
     private long id;
     @NotNull @NotBlank
     private String name;
-   @NotNull @NotBlank
+    @NotNull @NotBlank
     private String lastname;
     @NotNull @NotBlank @Email
     private String email;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull @NotBlank
     private String password;
 }
